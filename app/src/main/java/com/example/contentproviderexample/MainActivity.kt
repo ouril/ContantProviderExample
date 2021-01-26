@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, ".onCreate: requesting permission")
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(READ_CONTACTS),
+                arrayOf(READ_CONTACTS, WRITE_CONTACTS),
                 REQUEST_CODE_READ_CONTACTS
             )
         }
@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity() {
         val hasReadyWriteContactPermission = ContextCompat.checkSelfPermission(this, WRITE_CONTACTS)
 
         if (hasReadyWriteContactPermission == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, ".onCreate: permission granted")
-            readGranted = true  // TODO don't do this!!
         } else {
             Log.d(TAG, ".onCreate: requesting permission")
             ActivityCompat.requestPermissions(
@@ -89,8 +87,10 @@ class MainActivity : AppCompatActivity() {
                 listView.adapter = adapter
 
                 listView.setOnItemClickListener { adapterView, view, i, l ->
+
                     contacts.removeAt(i)
-                    contentResolver.delete(ContactsContract.Contacts.CONTENT_URI,"${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} = ?", arrayOf(contacts[i]))
+                    val id = contentResolver.delete(ContactsContract.RawContacts.CONTENT_URI,"${ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY} = ?", arrayOf(contacts[i]))
+                    println(id)
                     adapter.notifyDataSetChanged()
                 }
             } else {
